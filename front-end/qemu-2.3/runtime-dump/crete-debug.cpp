@@ -7,6 +7,11 @@ extern "C" {
 }
 #include "tcg.h"
 
+// QEMU's osdep.h redefines `inline` under __OPTIMIZE__; undo it so it does not
+// leak into the C++ standard headers pulled in below. The modern libstdc++ uses
+// `inline namespace` (e.g. __cxx11, _V2), which the macro would break.
+#undef inline
+
 #include <sys/time.h>
 #include <sys/resource.h>
 

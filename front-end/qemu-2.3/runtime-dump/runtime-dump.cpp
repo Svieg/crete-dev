@@ -8,6 +8,11 @@ extern "C" {
 }
 #include "tcg.h"
 
+// QEMU's osdep.h redefines `inline` under __OPTIMIZE__; undo it so it does not
+// leak into the C++ standard headers pulled in below. The modern libstdc++ uses
+// `inline namespace` (e.g. __cxx11, _V2), which the macro would break.
+#undef inline
+
 #include <boost/archive/binary_oarchive.hpp>
 
 #include <crete/test_case.h>

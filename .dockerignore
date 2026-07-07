@@ -1,0 +1,7 @@
+# Keep the build context small. Submodules are fetched inside the image, and a
+# throwaway git repo is created there for the `crete-version` target, so the
+# 234M .git dir is not needed.
+.git
+crete-build/
+build/
+*~

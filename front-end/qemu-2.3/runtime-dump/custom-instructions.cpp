@@ -3,6 +3,11 @@
 #include "tci_analyzer.h"
 #include "crete-debug.h"
 
+// The CRETE headers above pull in QEMU's osdep.h, which redefines `inline` under
+// __OPTIMIZE__; undo it so it does not leak into the C++ standard headers below
+// (the modern libstdc++ uses `inline namespace`, which the macro would break).
+#undef inline
+
 #include <boost/serialization/split_member.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/unordered_set.hpp>

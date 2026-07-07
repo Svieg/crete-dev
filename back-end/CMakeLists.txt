@@ -7,7 +7,16 @@ add_subdirectory(llvm-translator)
 
 include(ExternalProject)
 
-set(KLEE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${CMAKE_SOURCE_DIR}/lib/include/ -I${CMAKE_BINARY_DIR}/lib/boost/boost-prefix/src/boost_1_59_0 -DCRETE_CONFIG=1")
+# -fno-exceptions: KLEE disables exceptions only when `llvm-config --cxxflags`
+# advertises -fno-exceptions (see its cmake/find_llvm.cmake -> LLVM_ENABLE_EH).
+# Stock LLVM 3.4 does; the LLVM we build from source in the Dockerfile does not,
+# so force it here. Without it KLEE compiles with exceptions, Boost never defines
+# BOOST_NO_EXCEPTIONS, and crete-replayer's boost::throw_exception override (which
+# only exists under BOOST_NO_EXCEPTIONS) matches no declaration.
+# RTTI is deliberately left ON (LLVM is built with LLVM_REQUIRES_RTTI=ON in the
+# Dockerfile): crete-replayer serializes with Boost.Serialization, which needs
+# typeid/dynamic_cast, so -fno-rtti is not an option here.
+set(KLEE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions -I${CMAKE_SOURCE_DIR}/lib/include/ -I${CMAKE_BINARY_DIR}/lib/boost/boost-prefix/src/boost_1_59_0 -DCRETE_CONFIG=1")
 set(KLEE_C_FLAGS "${CMAKE_C_FLAGS} -I${CMAKE_SOURCE_DIR}/lib/include/ -I${CMAKE_BINARY_DIR}/lib/boost/boost-prefix/src/boost_1_59_0 -DCRETE_CONFIG=1")
 # -I/usr/include/glib-2.0/ -I/usr/lib/x86_64-linux-gnu/glib-2.0/include/
 set(KLEE_LD_FLAGS "-L${CMAKE_BINARY_DIR}/bin -L${CMAKE_BINARY_DIR}/bin/boost")

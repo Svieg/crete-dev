@@ -1,6 +1,15 @@
 #ifndef CRETE_INCLUDE_COMMON
 #define CRETE_INCLUDE_COMMON
 
+#include <signal.h>
+
+// SIGUNUSED (historically == SIGSYS == 31 on Linux) was dropped from modern
+// glibc's <signal.h>. Several CRETE exit-code range checks still use it as the
+// upper bound of the signal numbers; keep it defined to its old value.
+#ifndef SIGUNUSED
+#define SIGUNUSED SIGSYS
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
